@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+
+  php72:
+    build:
+      context: ./php-fpm/72
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+      - ./php-fpm/72/php.ini:/usr/local/etc/php/php.ini
+      - ./php-fpm/logs:/var/log
+    expose:
+      - "9000"
+
+  nginx:
+    build:
+      context: ./nginx
+    volumes:
+      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+      - ./nginx/logs:/var/log/nginx
+    ports:
+      - "80:80"
