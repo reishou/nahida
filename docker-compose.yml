@@ -4,13 +4,15 @@ services:
 
   php72:
     build:
-      context: ./php-fpm/72
+      context: php-fpm/7.2
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
-      - ./php-fpm/72/php.ini:/usr/local/etc/php/php.ini
+      - ./php-fpm/7.2/php.ini:/usr/local/etc/php/php.ini
       - ./php-fpm/logs:/var/log
     expose:
       - "9000"
+    links:
+      - mysql57:mysql
 
   nginx:
     build:
@@ -20,3 +22,17 @@ services:
       - ./nginx/logs:/var/log/nginx
     ports:
       - "80:80"
+
+  mysql57:
+    build:
+      context: ./mysql/5.7
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=secret
+      - TZ=UTC
+    volumes:
+      - ./mysql/5.7/data:/var/lib/mysql
+      - ./mysql/5.7/logs:/var/log/mysql
+    ports:
+      - "3306:3306"

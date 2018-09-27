@@ -1,4 +1,5 @@
 /.idea
 .env
-/*/logs/*
+/*/logs
 /*/*/logs
+/mysql/*/data

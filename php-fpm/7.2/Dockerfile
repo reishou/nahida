@@ -4,7 +4,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apk update \
     && apk upgrade \
-    && apk add --no-cache bash
+    && docker-php-ext-install \
+        pdo_mysql
 
 WORKDIR /var/www
 
