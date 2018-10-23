@@ -9,3 +9,7 @@ cp .env.example .env
 ```
 cp nginx/sites/default.conf nginx/sites/your-web.conf
 ```
+
+```
+docker-compose up -d
+```
