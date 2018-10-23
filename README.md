@@ -1,1 +1,11 @@
-Default docker for laravel project
+```
+Clone repo
+```
+
+```
+cp .env.example .env
+```
+
+```
+cp nginx/sites/default.conf nginx/sites/your-web.conf
+```

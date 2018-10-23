@@ -14,6 +14,18 @@ services:
     links:
       - mysql57:mysql
 
+  php71:
+    build:
+      context: php-fpm/7.1
+    volumes:
+    - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+    - ./php-fpm/7.1/php.ini:/usr/local/etc/php/php.ini
+    - ./php-fpm/logs:/var/log
+    expose:
+    - "9001"
+    links:
+    - mysql57:mysql
+
   nginx:
     build:
       context: ./nginx
