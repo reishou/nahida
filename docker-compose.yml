@@ -6,19 +6,22 @@ services:
     build:
       context: php-fpm/7-stable
     volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+      - /Code:/var/www
       - ./php-fpm/7-stable/php.ini:/usr/local/etc/php/php.ini
+      - ./php-fpm/7-stable/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    environment:
+      - PHP_IDE_CONFIG="serverName=lumen"
     expose:
       - "9000"
 
-  php71:
-    build:
-      context: php-fpm/7.1
-    volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
-      - ./php-fpm/7.1/php.ini:/usr/local/etc/php/php.ini
-    expose:
-      - "9001"
+#  php71:
+#    build:
+#      context: php-fpm/7.1
+#    volumes:
+#      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
+#      - ./php-fpm/7.1/php.ini:/usr/local/etc/php/php.ini
+#    expose:
+#      - "9001"
 
   nginx:
     build:
@@ -49,25 +52,25 @@ services:
     ports:
       - "3306:3306"
 
-  mysql57:
-    build:
-      context: ./mysql/5.7
-    environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=secret
-      - TZ=UTC
-    volumes:
-      - ./mysql/5.7/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ./mysql/5.7/data:/var/lib/mysql
-      - ./mysql/5.7/logs:/var/log/mysql
-    ports:
-      - "33060:3306"
-
-  redis:
-    build:
-      context: ./redis
-    volumes:
-      - ./redis/data:/data
-    ports:
-      - "6379:6379"
+#  mysql57:
+#    build:
+#      context: ./mysql/5.7
+#    environment:
+#      - MYSQL_USER=root
+#      - MYSQL_PASSWORD=secret
+#      - MYSQL_ROOT_PASSWORD=secret
+#      - TZ=UTC
+#    volumes:
+#      - ./mysql/5.7/my.cnf:/etc/mysql/conf.d/my.cnf
+#      - ./mysql/5.7/data:/var/lib/mysql
+#      - ./mysql/5.7/logs:/var/log/mysql
+#    ports:
+#      - "33060:3306"
+#
+#  redis:
+#    build:
+#      context: ./redis
+#    volumes:
+#      - ./redis/data:/data
+#    ports:
+#      - "6379:6379"
