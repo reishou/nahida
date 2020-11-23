@@ -1,5 +1,5 @@
-/.idea
-.env
-/*/logs
-/*/*/logs
-/mysql/*/data
+app/.composer
+app/logs
+localstack/data
+mysql/data
+mysql/logs

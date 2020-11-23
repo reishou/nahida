@@ -1,5 +1,0 @@
-CREATE DATABASE IF NOT EXISTS `laravel`;
-CREATE DATABASE IF NOT EXISTS `lumen`;
-
-CREATE USER 'root'@'localhost' IDENTIFIED BY 'local';
-GRANT ALL ON *.* TO 'root'@'%';

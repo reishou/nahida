@@ -1,50 +1,42 @@
 version: '3'
 
 services:
-
-  php72:
+  app:
     build:
-      context: php-fpm/7.2
-    volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
-      - ./php-fpm/7.2/php.ini:/usr/local/etc/php/php.ini
-      - ./php-fpm/logs:/var/log
-    expose:
-      - "9000"
-    links:
-      - mysql57:mysql
-
-  php71:
-    build:
-      context: php-fpm/7.1
-    volumes:
-    - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
-    - ./php-fpm/7.1/php.ini:/usr/local/etc/php/php.ini
-    - ./php-fpm/logs:/var/log
-    expose:
-    - "9001"
-    links:
-    - mysql57:mysql
-
-  nginx:
-    build:
-      context: ./nginx
-    volumes:
-      - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}
-      - ./nginx/logs:/var/log/nginx
+      context: app
     ports:
-      - "80:80"
+      - ${APP_PORT}:80
+    volumes:
+      - ${APP_PATH}:/var/www/html
+      - ./app/logs/nginx:/var/log/nginx
+      - ./app/.composer:/root/.composer
+    depends_on:
+      - mysql
 
-  mysql57:
-    build:
-      context: ./mysql/5.7
+  mysql:
+    image: mysql:5.7
     environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=secret
-      - TZ=UTC
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: "secret"
     volumes:
-      - ./mysql/5.7/data:/var/lib/mysql
-      - ./mysql/5.7/logs:/var/log/mysql
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/logs:/var/log/mysql
     ports:
-      - "3306:3306"
+      - ${MYSQL_PORT}:3306
+
+  localstack:
+    image: localstack/localstack:latest
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=us-west-2
+      - DATA_DIR=/tmp/localstack/data
+    ports:
+      - 4566:4566
+    volumes:
+      - ./localstack/data:/tmp/localstack
+      - ./localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d
+    networks:
+      default:
+        aliases:
+          - laravel-bucket.localhost
