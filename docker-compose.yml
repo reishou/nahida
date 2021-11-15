@@ -11,32 +11,45 @@ services:
       - ./app/logs/nginx:/var/log/nginx
       - ./app/.composer:/root/.composer
     depends_on:
-      - mysql
+#      - mysql
+      - postgres
 
-  mysql:
-    image: mysql:5.7
-    environment:
-      MYSQL_DATABASE: laravel
-      MYSQL_ROOT_PASSWORD: "secret"
-    volumes:
-      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/logs:/var/log/mysql
-    ports:
-      - ${MYSQL_PORT}:3306
+#  mysql:
+#    image: mysql:5.7
+#    environment:
+#      - MYSQL_DATABASE=laravel
+#      - MYSQL_ROOT_PASSWORD=secret
+#    volumes:
+#      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+#      - ./mysql/data:/var/lib/mysql
+#      - ./mysql/logs:/var/log/mysql
+#    ports:
+#      - ${MYSQL_PORT}:3306
 
-  localstack:
-    image: localstack/localstack:latest
+  postgres:
+    build:
+      context: postgres
     environment:
-      - SERVICES=s3
-      - DEFAULT_REGION=us-west-2
-      - DATA_DIR=/tmp/localstack/data
-    ports:
-      - 4566:4566
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_MULTIPLE_DATABASES_WITH_POSTGIS=market,stock
     volumes:
-      - ./localstack/data:/tmp/localstack
-      - ./localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d
-    networks:
-      default:
-        aliases:
-          - laravel-bucket.localhost
+      - ./postgres/data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT}:5432
+
+#  localstack:
+#    image: localstack/localstack:latest
+#    environment:
+#      - SERVICES=s3
+#      - DEFAULT_REGION=us-west-2
+#      - DATA_DIR=/tmp/localstack/data
+#    ports:
+#      - ${LOCALSTACK_PORT}:4566
+#    volumes:
+#      - ./localstack/data:/tmp/localstack
+#      - ./localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d
+#    networks:
+#      default:
+#        aliases:
+#          - laravel-bucket.localhost

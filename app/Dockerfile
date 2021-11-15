@@ -1,21 +1,47 @@
-FROM alpine:3.13
+FROM alpine:3.14
 LABEL Maintainer="Reishou <reishou90@gmail.com>" \
-      Description="Lightweight container with Nginx & PHP-FPM 7 based on Alpine Linux."
+      Description="Lightweight container with Nginx & PHP-FPM 8 based on Alpine Linux."
 
-# Install packages
-RUN apk --no-cache add php7 php7-fpm php7-bcmath php7-ctype php7-json php7-fileinfo \
-    php7-mbstring php7-openssl php7-pdo_mysql php7-curl php7-pdo php7-tokenizer php7-xml \
-    php7-opcache nginx curl runit openrc composer php7-simplexml php7-dom php7-xmlwriter
+RUN apk --no-cache add \
+    php8  \
+    php8-fpm  \
+    php8-bcmath  \
+    php8-ctype  \
+    php8-fileinfo \
+    php8-json  \
+    php8-mbstring  \
+    php8-openssl  \
+    php8-pdo_pgsql  \
+    php8-curl  \
+    php8-pdo  \
+    php8-tokenizer  \
+    php8-xml \
+    php8-phar \
+    php8-dom \
+    php8-gd \
+    php8-iconv \
+    php8-xmlwriter \
+    php8-xmlreader \
+    php8-zip \
+    php8-simplexml \
+    nginx  \
+    curl  \
+    runit
+
+RUN cp /usr/bin/php8 /usr/bin/php
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Configure nginx
 COPY nginx.conf /etc/nginx/nginx.conf
-ADD sites/*.conf /etc/nginx/conf.d/
+COPY sites/*.conf /etc/nginx/http.d/
 # Remove default server definition
-RUN rm /etc/nginx/conf.d/default.conf
+RUN rm /etc/nginx/http.d/default.conf
 
 # Configure PHP-FPM
-COPY fpm-pool.conf /etc/php7/php-fpm.d/www.conf
-COPY php.ini /etc/php7/conf.d/custom.ini
+COPY fpm-pool.conf /etc/php8/php-fpm.d/www.conf
+COPY php.ini /etc/php8/conf.d/custom.ini
 
 # Configure runit boot script
 COPY boot.sh /sbin/boot.sh
@@ -34,6 +60,8 @@ COPY php.run /etc/service/php/run
 RUN chmod +x /etc/service/nginx/run \
     && chmod +x /etc/service/php/run \
     && ls -al /var/www/html/
+
+WORKDIR /var/www/html
 
 # Expose the port nginx is reachable on
 EXPOSE 80
