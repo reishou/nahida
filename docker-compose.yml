@@ -32,7 +32,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=secret
-      - POSTGRES_MULTIPLE_DATABASES_WITH_POSTGIS=market,stock
+      - POSTGRES_MULTIPLE_DATABASES_WITH_POSTGIS=laravel
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
     ports:

@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.15
 LABEL Maintainer="Reishou <reishou90@gmail.com>" \
       Description="Lightweight container with Nginx & PHP-FPM 8 based on Alpine Linux."
 
