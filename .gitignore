@@ -1,5 +1,2 @@
-app/.composer
-app/logs
-localstack/data
-mysql/data
-mysql/logs
+.env
+.idea

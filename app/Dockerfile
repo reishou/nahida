@@ -1,34 +1,39 @@
-FROM alpine:3.15
+FROM alpine:3.18
 LABEL Maintainer="Reishou <reishou90@gmail.com>" \
       Description="Lightweight container with Nginx & PHP-FPM 8 based on Alpine Linux."
 
 RUN apk --no-cache add \
-    php8  \
-    php8-fpm  \
-    php8-bcmath  \
-    php8-ctype  \
-    php8-fileinfo \
-    php8-json  \
-    php8-mbstring  \
-    php8-openssl  \
-    php8-pdo_pgsql  \
-    php8-curl  \
-    php8-pdo  \
-    php8-tokenizer  \
-    php8-xml \
-    php8-phar \
-    php8-dom \
-    php8-gd \
-    php8-iconv \
-    php8-xmlwriter \
-    php8-xmlreader \
-    php8-zip \
-    php8-simplexml \
-    nginx  \
-    curl  \
+    curl \
+    nginx \
+    php82 \
+    php82-bcmath \
+    php82-ctype \
+    php82-curl \
+    php82-dom \
+    php82-fileinfo \
+    php82-fpm \
+    php82-gd \
+    php82-iconv \
+    php82-json \
+    php82-mbstring \
+    php82-openssl \
+    php82-pdo \
+    php82-pdo_mysql \
+    php82-pdo_pgsql \
+    php82-phar \
+    php82-redis \
+    php82-simplexml \
+    php82-session \
+    php82-sodium \
+    php82-tokenizer \
+    php82-xml \
+    php82-xmlwriter \
+    php82-xmlreader \
+    php82-zip \
     runit
 
-RUN cp /usr/bin/php8 /usr/bin/php
+RUN cp /usr/bin/php82 /usr/bin/php && \
+    cp /usr/sbin/php-fpm82 /usr/sbin/php-fpm
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
@@ -40,8 +45,8 @@ COPY sites/*.conf /etc/nginx/http.d/
 RUN rm /etc/nginx/http.d/default.conf
 
 # Configure PHP-FPM
-COPY fpm-pool.conf /etc/php8/php-fpm.d/www.conf
-COPY php.ini /etc/php8/conf.d/custom.ini
+COPY fpm-pool.conf /etc/php82/php-fpm.d/www.conf
+COPY php.ini /etc/php82/conf.d/custom.ini
 
 # Configure runit boot script
 COPY boot.sh /sbin/boot.sh

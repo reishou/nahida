@@ -5,17 +5,31 @@ services:
     build:
       context: app
     ports:
-      - ${APP_PORT}:80
+      - ${APP_PORT:-80}:80
     volumes:
-      - ${APP_PATH}:/var/www/html
+      - ${APP_PATH:-~/code}:/var/www/html
       - ./app/logs/nginx:/var/log/nginx
       - ./app/.composer:/root/.composer
     depends_on:
 #      - mysql
       - postgres
+      - redis
+
+  postgres:
+    build:
+      context: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secret}
+      - POSTGRES_DB=${POSTGRES_DB:-laravel}
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
 
 #  mysql:
-#    image: mysql:5.7
+#    build:
+#      context: ./mysql
 #    environment:
 #      - MYSQL_DATABASE=laravel
 #      - MYSQL_ROOT_PASSWORD=secret
@@ -24,32 +38,39 @@ services:
 #      - ./mysql/data:/var/lib/mysql
 #      - ./mysql/logs:/var/log/mysql
 #    ports:
-#      - ${MYSQL_PORT}:3306
+#      - ${MYSQL_PORT:-3306}:3306
 
-  postgres:
+  redis:
     build:
-      context: postgres
+      context: redis
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_MULTIPLE_DATABASES_WITH_POSTGIS=laravel
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-secret}
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ./redis/data:/data
+      - ./redis/redis.conf:/etc/redis.conf
     ports:
-      - ${POSTGRES_PORT}:5432
+      - ${REDIS_PORT:-6379}:6379
 
 #  localstack:
-#    image: localstack/localstack:latest
+#    image: localstack/localstack:2.0
 #    environment:
-#      - SERVICES=s3
-#      - DEFAULT_REGION=us-west-2
-#      - DATA_DIR=/tmp/localstack/data
+#      - AWS_DEFAULT_REGION=ap-southeast-1
+#      - DOCKER_HOST=unix:///var/run/docker.sock
 #    ports:
-#      - ${LOCALSTACK_PORT}:4566
+#      - ${LOCALSTACK_PORT:-4566}:4566
 #    volumes:
-#      - ./localstack/data:/tmp/localstack
+#      - ./localstack/data:/var/lib/localstack
 #      - ./localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d
-#    networks:
-#      default:
-#        aliases:
-#          - laravel-bucket.localhost
+#      - /var/run/docker.sock:/var/run/docker.sock
+
+  mailpit:
+    image: axllent/mailpit:latest
+    environment:
+      - MP_DATA_FILE=/var/lib/mailpit/mailpit.db
+    ports:
+      - ${MAILPIT_PORT:-1025}:1025
+      - ${MAILPIT_UI_PORT:-8025}:8025
+    volumes:
+      - ./mailpit/data:/var/lib/mailpit
+
+# TODO: elastic search
