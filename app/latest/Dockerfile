@@ -20,6 +20,7 @@ RUN apk --no-cache add \
     php82-pdo \
     php82-pdo_mysql \
     php82-pdo_pgsql \
+    php82-pdo_sqlite \
     php82-phar \
     php82-redis \
     php82-simplexml \
@@ -39,17 +40,18 @@ RUN cp /usr/bin/php82 /usr/bin/php && \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
 # Configure nginx
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY sites/*.conf /etc/nginx/http.d/
+COPY ./../shared/nginx.conf /etc/nginx/nginx.conf
+COPY ./../shared/sites/*.conf /etc/nginx/http.d/
+#COPY ssl /etc/nginx/ssl
 # Remove default server definition
 RUN rm /etc/nginx/http.d/default.conf
 
 # Configure PHP-FPM
-COPY fpm-pool.conf /etc/php82/php-fpm.d/www.conf
-COPY php.ini /etc/php82/conf.d/custom.ini
+COPY ./../shared/fpm-pool.conf /etc/php81/php-fpm.d/www.conf
+COPY ./../shared/php.ini /etc/php81/conf.d/custom.ini
 
 # Configure runit boot script
-COPY boot.sh /sbin/boot.sh
+COPY ./../shared/boot.sh /sbin/boot.sh
 
 RUN adduser -D -u 1000 -g 1000 -s /bin/sh www && \
     mkdir -p /var/www/html && \
@@ -59,8 +61,8 @@ RUN adduser -D -u 1000 -g 1000 -s /bin/sh www && \
     chown -R www:www /var/lib/nginx && \
     chown -R www:www /var/log/nginx
 
-COPY nginx.run /etc/service/nginx/run
-COPY php.run /etc/service/php/run
+COPY ./../shared/nginx.run /etc/service/nginx/run
+COPY ./../shared/php.run /etc/service/php/run
 
 RUN chmod +x /etc/service/nginx/run \
     && chmod +x /etc/service/php/run \
@@ -70,7 +72,7 @@ WORKDIR /var/www/html
 
 # Expose the port nginx is reachable on
 EXPOSE 80
+#EXPOSE 443
 
 # Let boot start nginx & php-fpm
 CMD ["sh", "/sbin/boot.sh"]
-

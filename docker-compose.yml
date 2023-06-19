@@ -1,17 +1,33 @@
-version: '3'
+version: "3.8"
 
 services:
   app:
     build:
-      context: app
+      context: ./app
+      dockerfile: latest/Dockerfile
     ports:
-      - ${APP_PORT:-80}:80
+      - ${APP_PORT:-82}:80
     volumes:
       - ${APP_PATH:-~/code}:/var/www/html
-      - ./app/logs/nginx:/var/log/nginx
-      - ./app/.composer:/root/.composer
+      - ./app/latest/logs/nginx:/var/log/nginx
+      - ./app/latest/.composer:/root/.composer
     depends_on:
-#      - mysql
+      - mysql
+      - postgres
+      - redis
+
+  app81:
+    build:
+      context: ./app
+      dockerfile: 81/Dockerfile
+    ports:
+      - ${APP_81_PORT:-81}:80
+    volumes:
+      - ${APP_PATH:-~/code}:/var/www/html
+      - ./app/81/logs/nginx:/var/log/nginx
+      - ./app/81/.composer:/root/.composer
+    depends_on:
+      - mysql
       - postgres
       - redis
 
@@ -27,18 +43,17 @@ services:
     ports:
       - ${POSTGRES_PORT:-5432}:5432
 
-#  mysql:
-#    build:
-#      context: ./mysql
-#    environment:
-#      - MYSQL_DATABASE=laravel
-#      - MYSQL_ROOT_PASSWORD=secret
-#    volumes:
-#      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
-#      - ./mysql/data:/var/lib/mysql
-#      - ./mysql/logs:/var/log/mysql
-#    ports:
-#      - ${MYSQL_PORT:-3306}:3306
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_DATABASE=laravel
+      - MYSQL_ROOT_PASSWORD=secret
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/logs:/var/log/mysql
+    ports:
+      - ${MYSQL_PORT:-3306}:3306
 
   redis:
     build:
@@ -51,17 +66,20 @@ services:
     ports:
       - ${REDIS_PORT:-6379}:6379
 
-#  localstack:
-#    image: localstack/localstack:2.0
-#    environment:
-#      - AWS_DEFAULT_REGION=ap-southeast-1
-#      - DOCKER_HOST=unix:///var/run/docker.sock
-#    ports:
-#      - ${LOCALSTACK_PORT:-4566}:4566
-#    volumes:
-#      - ./localstack/data:/var/lib/localstack
-#      - ./localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d
-#      - /var/run/docker.sock:/var/run/docker.sock
+  localstack:
+    image: localstack/localstack:2.0
+    environment:
+      - AWS_DEFAULT_REGION=ap-southeast-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DEBUG=1
+    ports:
+      - ${LOCALSTACK_PORT_START:-4563}-${LOCALSTACK_PORT_END:-4599}:4563-4599
+    volumes:
+      - ./localstack/data:/var/lib/localstack
+      - ./localstack/docker-entrypoint-initaws.d:/docker-entrypoint-initaws.d
+      - /var/run/docker.sock:/var/run/docker.sock
 
   mailpit:
     image: axllent/mailpit:latest
@@ -72,5 +90,3 @@ services:
       - ${MAILPIT_UI_PORT:-8025}:8025
     volumes:
       - ./mailpit/data:/var/lib/mailpit
-
-# TODO: elastic search
