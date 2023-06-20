@@ -1,32 +1,16 @@
-```
-Clone repo
-```
+This repository has been archived and is no longer actively maintained.
+Please note that the code and resources in this repository may be outdated
+and may not work with the latest versions of dependencies or libraries.
 
-```
-cp .env.example .env
-```
+We recommend redirecting your attention to the new repository named "Nahida".
+The "Nahida" repository is an updated and actively maintained project that
+supersedes the functionalities and improvements of this archived repository.
 
-```
-cp app/sites/default.conf app/sites/your-web.conf
-```
+You can find the new repository at [Nahida](https://github.com/reishou/nahida).
+We encourage you to visit the "Nahida" repository to access the latest code,
+resources, and documentation. It incorporates newer features, bug fixes,
+and enhancements, providing an improved experience for users.
 
-```
-docker-compose up -d
-```
-
-S3 config in `config/filesystems.php`
-
-```php
-[
-    's3' => [
-        'driver' => 's3',
-        'key' => env('AWS_ACCESS_KEY_ID', 'test'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY', 'test'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-west-2'),
-        'bucket' => env('AWS_BUCKET', 'laravel'),
-        'endpoint' => env('AWS_S3_ENDPOINT', 'http://laravel.localhost:4566'),
-        'bucket_endpoint' => false,
-        'use_path_style_endpoint' => true,
-    ]
-];
-```
+Thank you for your understanding and continued support.
+Should you have any questions or require further assistance,
+please don't hesitate to reach out to the repository maintainers of "Nahida".
